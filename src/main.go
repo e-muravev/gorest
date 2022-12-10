@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ type UserModel struct {
 	Name     string
 	Email    string
 	Password string
+	// Ctime    time.Time
 }
 
 type UserCreateSerializer struct {
@@ -23,11 +25,18 @@ type UserCreateSerializer struct {
 	PasswordRepeated string `json:"password_repeated" binding:"required"`
 }
 
+type UserCreateResponseSerializer struct {
+	ID        uint      `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"createdat"`
+}
+
 func UserDetailView(c *gin.Context) {
 	c.JSON(200, gin.H{"FirstName": "Vasya1"})
 }
 
-func PasswordLengthValidator(value *string) bool {
+func PasswordMinLengthValidator(value *string) bool {
 	if len(*value) < 8 {
 		return false
 	}
@@ -49,7 +58,7 @@ func UserCreateView(c *gin.Context) {
 		return
 	}
 
-	if !PasswordLengthValidator(&serializer_data.Password) {
+	if !PasswordMinLengthValidator(&serializer_data.Password) {
 		c.JSON(http.StatusBadRequest, gin.H{"password": "Enter a valid password"})
 		return
 	}
@@ -59,17 +68,39 @@ func UserCreateView(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"Status": "OK"})
+	user := UserModel{
+		Name:     serializer_data.Name,
+		Email:    serializer_data.Email,
+		Password: serializer_data.Password,
+		// Ctime:    time.Now(),
+	}
+
+	dbconn().Create(&user)
+
+	// c.JSON(http.StatusCreated, gin.H{"status": "OK", "user_id": user.ID, "ctime": user.Ctime})
+
+	resp := UserCreateResponseSerializer{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+	}
+	c.JSON(http.StatusCreated, resp)
 }
 
-func main() {
-	// Init Database
+func dbconn() *gorm.DB {
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
 
 	db.AutoMigrate(&UserModel{})
+	return db
+}
+
+func main() {
+	// Init Database
+	dbconn()
 
 	// Init http
 	router := gin.Default()
