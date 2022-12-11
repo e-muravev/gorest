@@ -3,6 +3,11 @@ module gorest
 go 1.19
 
 require (
+	app/storage v0.0.0-00010101000000-000000000000 // indirect
+	app/user/controllers v0.0.0-00010101000000-000000000000 // indirect
+	app/user/handlers v0.0.0-00010101000000-000000000000 // indirect
+	app/user/models v0.0.0-00010101000000-000000000000 // indirect
+	app/user/transformers v0.0.0-00010101000000-000000000000 // indirect
 	github.com/cosmtrek/air v1.40.4 // indirect
 	github.com/creack/pty v1.1.18 // indirect
 	github.com/fatih/color v1.13.0 // indirect
@@ -36,3 +41,13 @@ require (
 	gorm.io/driver/sqlite v1.4.3 // indirect
 	gorm.io/gorm v1.24.2 // indirect
 )
+
+replace app/user/transformers => ./app/user/transformers
+
+replace app/user/controllers => ./app/user/controllers
+
+replace app/user/models => ./app/user/models
+
+replace app/user/handlers => ./app/user/handlers
+
+replace app/storage => ./app/storage
