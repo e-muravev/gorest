@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"app/user/handlers"
-	"app/user/repositories"
 	"app/user/transformers"
 
 	"github.com/gin-gonic/gin"
@@ -31,9 +30,7 @@ func UserCreateController(c *gin.Context) {
 
 	serializer_data.Password, _ = handlers.PasswordHashingHandler(serializer_data.Password)
 
-	user_repo := repositories.NewUserCreateRepository()
-
-	user := user_repo.UserCreate(
+	user := handlers.CreateNewUserHandler(
 		serializer_data.Name,
 		serializer_data.Email,
 		serializer_data.Password,
