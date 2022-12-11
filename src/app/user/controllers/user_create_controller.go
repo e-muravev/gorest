@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"app/user/handlers"
@@ -28,6 +29,8 @@ func UserCreateController(c *gin.Context) {
 		return
 	}
 
+	serializer_data.Password, _ = handlers.PasswordHashingHandler(serializer_data.Password)
+
 	user_repo := repositories.NewUserCreateRepository()
 
 	user := user_repo.UserCreate(
@@ -35,6 +38,8 @@ func UserCreateController(c *gin.Context) {
 		serializer_data.Email,
 		serializer_data.Password,
 	)
+
+	fmt.Println(user.Password)
 
 	// c.JSON(http.StatusCreated, gin.H{"status": "OK", "user_id": user.ID, "ctime": user.Ctime})
 
