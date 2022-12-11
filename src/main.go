@@ -1,7 +1,7 @@
 package main
 
 import (
-	db "app/storage"
+	"app/dbstorage"
 	"app/user/controllers"
 
 	"github.com/gin-contrib/cors"
@@ -10,7 +10,8 @@ import (
 
 func main() {
 	// Init Database
-	db.DB()
+	db := dbstorage.NewDB()
+	db.Migrate()
 
 	// Init http
 	router := gin.Default()

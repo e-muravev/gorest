@@ -3,9 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	db "app/storage"
 	"app/user/handlers"
-	"app/user/models"
+	"app/user/repositories"
 	"app/user/transformers"
 
 	"github.com/gin-gonic/gin"
@@ -29,14 +28,13 @@ func UserCreateController(c *gin.Context) {
 		return
 	}
 
-	user := models.UserModel{
-		Name:     serializer_data.Name,
-		Email:    serializer_data.Email,
-		Password: serializer_data.Password,
-		// Ctime:    time.Now(),
-	}
+	user_repo := repositories.NewUserCreateRepository()
 
-	db.DB().Create(&user)
+	user := user_repo.UserCreate(
+		serializer_data.Name,
+		serializer_data.Email,
+		serializer_data.Password,
+	)
 
 	// c.JSON(http.StatusCreated, gin.H{"status": "OK", "user_id": user.ID, "ctime": user.Ctime})
 
