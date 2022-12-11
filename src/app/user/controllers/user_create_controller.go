@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"app/user/handlers"
+	"app/user/repositories"
 	"app/user/transformers"
 
 	"github.com/gin-gonic/gin"
@@ -28,15 +29,22 @@ func UserCreateController(c *gin.Context) {
 		return
 	}
 
+	// Check if user exists
+	_, err := handlers.UserExistsByNameHandler(serializer_data.Name)
+
+	// fmt.Println("\n", user_exists, err, "\n")
+	if err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"name": fmt.Sprintf("user with name='%s' exists", serializer_data.Name)})
+		return
+	}
+
 	serializer_data.Password, _ = handlers.PasswordHashingHandler(serializer_data.Password)
 
-	user := handlers.CreateNewUserHandler(
+	user := handlers.CreateNewUserHandler{Repository: repositories.NewUserCreateRepository()}.Run(
 		serializer_data.Name,
 		serializer_data.Email,
 		serializer_data.Password,
 	)
-
-	fmt.Println(user.Password)
 
 	// c.JSON(http.StatusCreated, gin.H{"status": "OK", "user_id": user.ID, "ctime": user.Ctime})
 

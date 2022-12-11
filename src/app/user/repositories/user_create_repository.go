@@ -15,12 +15,12 @@ func NewUserCreateRepository() UserCreateRepository {
 	return UserCreateRepository{conn: dbstorage.NewDB().Db}
 }
 
-func (u *UserCreateRepository) UserCreate(name string, email string, passowrd string) models.UserModel {
+func (u *UserCreateRepository) UserCreate(name string, email string, password string) models.UserModel {
 
 	user := models.UserModel{
 		Name:     name,
 		Email:    email,
-		Password: passowrd,
+		Password: password,
 		// Ctime:    time.Now(),
 	}
 
