@@ -1,50 +1,35 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
-	"app/user/handlers"
-	"app/user/repositories"
+	"app/user/actions"
+	"app/user/exceptions"
 	"app/user/transformers"
 
 	"github.com/gin-gonic/gin"
 )
 
 func UserCreateController(c *gin.Context) {
-	var serializer_data transformers.UserCreateTransformer
+	var serializerData transformers.UserCreateTransformer
 
-	if err := c.ShouldBindJSON(&serializer_data); err != nil {
+	if err := c.ShouldBindJSON(&serializerData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if !handlers.PasswordMinLengthValidator(&serializer_data.Password) {
-		c.JSON(http.StatusBadRequest, gin.H{"password": "Enter a valid password"})
+	user, err := actions.UserCreateAction{}.Run(serializerData)
+	if err != nil {
+		switch {
+		case errors.Is(err, exceptions.MinLengthInvalidPasswordError), errors.Is(err, exceptions.PasswordComparingError):
+			c.JSON(http.StatusBadRequest, gin.H{"password": err.Error()})
+		case errors.Is(err, exceptions.UserExistsByNameError):
+			c.JSON(http.StatusBadRequest, gin.H{"name": fmt.Sprintf("user with name='%s' exists", serializerData.Name)})
+		}
 		return
 	}
-
-	if !handlers.PasswordComparingValidator(&serializer_data.Password, &serializer_data.PasswordRepeated) {
-		c.JSON(http.StatusBadRequest, gin.H{"password": "password and password_repeated should be the same"})
-		return
-	}
-
-	// Check if user exists
-	_, err := handlers.UserExistsByNameHandler(serializer_data.Name)
-
-	// fmt.Println("\n", user_exists, err, "\n")
-	if err == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"name": fmt.Sprintf("user with name='%s' exists", serializer_data.Name)})
-		return
-	}
-
-	serializer_data.Password, _ = handlers.PasswordHashingHandler(serializer_data.Password)
-
-	user := handlers.CreateNewUserHandler{Repository: repositories.NewUserCreateRepository()}.Run(
-		serializer_data.Name,
-		serializer_data.Email,
-		serializer_data.Password,
-	)
 
 	// c.JSON(http.StatusCreated, gin.H{"status": "OK", "user_id": user.ID, "ctime": user.Ctime})
 

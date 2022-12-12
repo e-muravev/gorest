@@ -4,7 +4,9 @@ go 1.19
 
 require (
 	app/dbstorage v0.0.0-00010101000000-000000000000 // indirect
+	app/user/actions v0.0.0-00010101000000-000000000000 // indirect
 	app/user/controllers v0.0.0-00010101000000-000000000000 // indirect
+	app/user/exceptions v0.0.0-00010101000000-000000000000 // indirect
 	app/user/handlers v0.0.0-00010101000000-000000000000 // indirect
 	app/user/models v0.0.0-00010101000000-000000000000 // indirect
 	app/user/repositories v0.0.0-00010101000000-000000000000 // indirect
@@ -54,3 +56,7 @@ replace app/user/handlers => ./app/user/handlers
 replace app/dbstorage => ./app/dbstorage
 
 replace app/user/repositories => ./app/user/repositories
+
+replace app/user/actions => ./app/user/actions
+
+replace app/user/exceptions => ./app/user/exceptions
