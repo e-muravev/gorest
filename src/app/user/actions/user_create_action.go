@@ -27,11 +27,16 @@ func (a UserCreateAction) Run(serializerData transformers.UserCreateTransformer)
 	}
 
 	// Check if user exists
+	if handlers.UserExistsByEmailHandler(serializerData.Email) {
+		return user, exceptions.UserExistsByEmailError
+	}
+
 	_, err := handlers.UserExistsByNameHandler(serializerData.Name)
 	// fmt.Println("\n", user_exists, err, "\n")
 	if err == nil {
 		return user, exceptions.UserExistsByNameError
 	}
+
 
 	serializerData.Password, _ = handlers.PasswordHashingHandler(serializerData.Password)
 

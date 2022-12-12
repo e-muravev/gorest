@@ -27,6 +27,8 @@ func UserCreateController(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"password": err.Error()})
 		case errors.Is(err, exceptions.UserExistsByNameError):
 			c.JSON(http.StatusBadRequest, gin.H{"name": fmt.Sprintf("user with name='%s' exists", serializerData.Name)})
+		case errors.Is(err, exceptions.UserExistsByEmailError):
+			c.JSON(http.StatusBadRequest, gin.H{"name": fmt.Sprintf("user with email='%s' exists", serializerData.Email)})
 		}
 		return
 	}
