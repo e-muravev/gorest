@@ -22,6 +22,7 @@
 pkg/
 bin/
 src/tmp
+src/gorest
 
 go.sum
 go.work.sum
