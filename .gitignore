@@ -21,6 +21,7 @@
 # vendor/
 pkg/
 bin/
+src/tmp
 
 go.sum
 go.work.sum
