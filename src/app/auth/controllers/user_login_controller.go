@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserCreateController(c *gin.Context) {
+func UserLoginController(c *gin.Context) {
 	var serializerData user.transformers.UserCreateTransformer
 
 	if err := c.ShouldBindJSON(&serializerData); err != nil {
@@ -18,7 +18,7 @@ func UserCreateController(c *gin.Context) {
 		return
 	}
 
-	user, err := user.actions.UserCreateAction{}.Run(serializerData)
+	user, err := actions.UserCreateAction{}.Run(serializerData)
 	if err != nil {
 		switch {
 		case errors.Is(err, user.exceptions.MinLengthInvalidPasswordError), errors.Is(err, user.exceptions.PasswordComparingError):

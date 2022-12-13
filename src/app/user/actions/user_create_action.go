@@ -1,20 +1,16 @@
 package actions
 
 import (
-	"app/user/exceptions"
-	"app/user/handlers"
-	"app/user/models"
-	"app/user/repositories"
-	"app/user/transformers"
+	"app/user"
 )
 
 type UserCreateAction struct{}
 
-func (a UserCreateAction) Run(serializerData transformers.UserCreateTransformer) (models.UserModel, error) {
-	var user models.UserModel
+func (a UserCreateAction) Run(serializerData user.transformers.UserCreateTransformer) (models.UserModel, error) {
+	var user user.models.UserModel
 
 	if !handlers.PasswordMinLengthValidator(&serializerData.Password) {
-		return user, exceptions.MinLengthInvalidPasswordError
+		return user, user.exceptions.MinLengthInvalidPasswordError
 		// return user, &exceptions.MinLengthInvalidPasswordError{
 		// 	Title:  "password",
 		// 	Detail: "enter a valid password",
@@ -23,24 +19,24 @@ func (a UserCreateAction) Run(serializerData transformers.UserCreateTransformer)
 	}
 
 	if !handlers.PasswordComparingValidator(&serializerData.Password, &serializerData.PasswordRepeated) {
-		return user, exceptions.PasswordComparingError
+		return user, user.exceptions.PasswordComparingError
 	}
 
 	// Check if user exists
 	if handlers.UserExistsByEmailHandler(serializerData.Email) {
-		return user, exceptions.UserExistsByEmailError
+		return user, user.exceptions.UserExistsByEmailError
 	}
 
 	_, err := handlers.UserExistsByNameHandler(serializerData.Name)
 	// fmt.Println("\n", user_exists, err, "\n")
 	if err == nil {
-		return user, exceptions.UserExistsByNameError
+		return user, user.exceptions.UserExistsByNameError
 	}
 
 
-	serializerData.Password, _ = handlers.PasswordHashingHandler(serializerData.Password)
+	serializerData.Password, _ = user.handlers.PasswordHashingHandler(serializerData.Password)
 
-	user = handlers.CreateNewUserHandler{Repository: repositories.NewUserCreateRepository()}.Run(
+	user = user.handlers.CreateNewUserHandler{Repository: user.repositories.NewUserCreateRepository()}.Run(
 		serializerData.Name,
 		serializerData.Email,
 		serializerData.Password,

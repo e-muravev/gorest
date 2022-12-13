@@ -1,15 +1,14 @@
 package handlers
 
 import (
-	"app/user/models"
-	"app/user/repositories"
+	"app/user"
 )
 
 type CreateNewUserHandler struct {
 	Repository repositories.UserCreateRepository
 }
 
-func (s CreateNewUserHandler) Run(name string, email string, password string) models.UserModel {
+func (s CreateNewUserHandler) Run(name string, email string, password string) user.models.UserModel {
 	user_repo := s.Repository
 
 	return user_repo.UserCreate(name, email, password)

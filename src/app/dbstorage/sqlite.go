@@ -1,7 +1,7 @@
 package dbstorage
 
 import (
-	"app/user/models"
+	"app/user"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -22,5 +22,5 @@ func NewDB() DB {
 }
 
 func (d *DB) Migrate() {
-	d.Db.AutoMigrate(&models.UserModel{})
+	d.Db.AutoMigrate(&user.models.UserModel{})
 }
